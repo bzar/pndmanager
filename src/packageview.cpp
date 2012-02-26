@@ -51,16 +51,3 @@ void PackageView::setPackages(QList<Package*> packages)
     delete item;
   }
 }
-
-void PackageView::showProgressBar(Package* package, QPndman::Handle* handle)
-{
-  qDebug() << "PackageView::showProgressBar";
-  foreach(PackageItem* item, packageItems)
-  {
-    if(item->getPackage() == package)
-    {
-      item->connectHandle(handle);
-      break;
-    }
-  }
-}

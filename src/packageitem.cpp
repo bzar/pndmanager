@@ -2,10 +2,9 @@
 #include <QDebug>
 #include <QHBoxLayout>
 
-PackageItem::PackageItem(Package* package, int index, QWidget* parent): QWidget(parent),
-  package(package), title(package->getTitle()), 
-  installButton("Install"), removeButton("Remove"), detailsButton("Details"), progressBar(),
-  bytesDownloaded(0), bytesToDownload(0)
+PackageItem::PackageItem(Package* p, int index, QWidget* parent): QWidget(parent),
+  package(0), title(), 
+  installButton("Install"), removeButton("Remove"), detailsButton("Details"), progressBar()
 {
   connect(&installButton, SIGNAL(clicked(bool)), this, SLOT(handleInstall()));
   connect(&removeButton, SIGNAL(clicked(bool)), this, SLOT(handleRemove()));
@@ -32,7 +31,7 @@ PackageItem::PackageItem(Package* package, int index, QWidget* parent): QWidget(
   layout->addWidget(&removeButton);
   removeButton.setStyleSheet("background-color: #D76D69;");
   layout->addWidget(&detailsButton);
-  setPackage(package);
+  setPackage(p);
 }
 
 Package* PackageItem::getPackage() const
@@ -42,36 +41,39 @@ Package* PackageItem::getPackage() const
 
 void PackageItem::setPackage(Package* p)
 {
-  package = p;
+  if(package != p)
+  {
+    if(package) disconnect(package);
+    package = p;    
+    connect(package, SIGNAL(bytesDownloadedChanged(qint64)), this, SLOT(setBytesDownloaded(qint64)));
+    connect(package, SIGNAL(bytesToDownloadChanged(qint64)), this, SLOT(bytesToDownloadChanged(qint64)));
+    progressBar.setMaximum(1);
+    progressBar.setValue(0);
+  }
   
   title.setText(package->getTitle());
   if(!package->getInstalled())
   {
-    installButton.show();
     installButton.setEnabled(true);
+    installButton.show();
     removeButton.hide();
-    progressBar.setValue(0);
-    progressBar.setMaximum(1);
   }
   else
   {
     installButton.hide();
     removeButton.show();
     removeButton.setEnabled(true);
-    progressBar.setValue(1);
-    progressBar.setMaximum(1);
+    progressBar.setValue(progressBar.maximum());
   }  
 }
 
 void PackageItem::handleInstall()
 {
-  installButton.setDisabled(true);
   emit install(package);
 }
 
 void PackageItem::handleRemove()
 {
-  removeButton.setDisabled(true);
   emit remove(package);
 }
 
@@ -80,21 +82,12 @@ void PackageItem::handleDetails()
   emit details(package);
 }
 
-void PackageItem::connectHandle(QPndman::Handle* handle)
-{
-  connect(handle, SIGNAL(bytesDownloadedChanged(qint64)), this, SLOT(setBytesDownloaded(qint64)));
-  connect(handle, SIGNAL(bytesToDownloadChanged(qint64)), this, SLOT(bytesToDownloadChanged(qint64)));
-}
-
 void PackageItem::setBytesDownloaded(qint64 value)
 {
-  bytesDownloaded = value;
-  progressBar.show();
+  installButton.setEnabled(false);
   progressBar.setValue(value);
 }
 void PackageItem::bytesToDownloadChanged(qint64 value)
 {
-  bytesToDownload = value;
-  progressBar.show();
   progressBar.setMaximum(value);
 }

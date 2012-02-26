@@ -10,13 +10,12 @@ class PackageItem : public QWidget
 {
   Q_OBJECT
 public:
-  PackageItem(Package* package, int index, QWidget* parent = 0);
+  PackageItem(Package* p, int index, QWidget* parent = 0);
 
   Package* getPackage() const;
   
 public slots:
   void setPackage(Package* p);
-  void connectHandle(QPndman::Handle* handle);
   void setBytesDownloaded(qint64);
   void bytesToDownloadChanged(qint64);
   
@@ -38,8 +37,5 @@ private:
   QPushButton removeButton;
   QPushButton detailsButton;
   QProgressBar progressBar;
-  
-  qint64 bytesDownloaded;
-  qint64 bytesToDownload;
 };
 #endif

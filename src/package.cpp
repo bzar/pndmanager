@@ -1,7 +1,7 @@
 #include "package.h"
 
 Package::Package(QPndman::Package const& p, bool installed, QObject* parent):
-  QPndman::Package(p), installed(installed)
+  QPndman::Package(p), installed(installed), bytesDownloaded(installed ? 1 : 0), bytesToDownload(installed ? 1 : 0)
 {
   setParent(parent);
 }
@@ -11,12 +11,45 @@ bool Package::getInstalled() const
   return installed;
 }
 
+qint64 Package::getBytesDownloaded() const
+{
+  return bytesDownloaded;
+}
+
+qint64 Package::getBytesToDownload() const
+{
+  return bytesToDownload;
+}
+
+void Package::setInstalled()
+{
+  setInstalled(true);
+}
+
 void Package::setInstalled(bool value)
 {
   if(installed != value)
   {
     installed = value;
     emit installedChanged(installed);
+  }
+}
+
+void Package::setBytesDownloaded(qint64 value)
+{
+  if(bytesDownloaded != value)
+  {
+    bytesDownloaded = value;
+    emit bytesDownloadedChanged(bytesDownloaded);
+  }
+}
+
+void Package::setBytesToDownload(qint64 value)
+{
+  if(bytesToDownload != value)
+  {
+    bytesToDownload = value;
+    emit bytesToDownloadChanged(bytesDownloaded);
   }
 }
 

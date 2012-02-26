@@ -138,8 +138,11 @@ void PackageModel::updatePackages()
 void PackageModel::install(Package* package, QPndman::Device* device, QPndman::InstallLocation location)
 {
   qDebug() << "PackageModel::install";
-  QPndman::Handle* handle = device->install(*package, location);
+  QPndman::InstallHandle* handle = device->install(*package, location);
   DownloadWorker* worker = new DownloadWorker(handle);
+  connect(handle, SIGNAL(bytesDownloadedChanged(qint64)), package, SIGNAL(bytesDownloadedChanged(qint64)));
+  connect(handle, SIGNAL(bytesToDownloadChanged(qint64)), package, SIGNAL(bytesToDownloadChanged(qint64)));
+  connect(handle, SIGNAL(done()), package, SLOT(setInstalled()));
   connect(handle, SIGNAL(done()), this, SLOT(crawl()));
   worker->start();
   emit installing(package, handle);

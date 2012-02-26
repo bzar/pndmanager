@@ -3,7 +3,7 @@
 
 DownloadWorker::DownloadWorker(QPndman::Handle* handle) : handle(handle), timer()
 {
-  timer.setInterval(100);
+  timer.setInterval(50);
   timer.setSingleShot(false);
   connect(&timer, SIGNAL(timeout()), this, SLOT(process()));
 }

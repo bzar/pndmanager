@@ -15,7 +15,6 @@ public:
   
 public slots:
   void setPackages(QList<Package*> packages);
-  void showProgressBar(Package* package, QPndman::Handle* handle);
 signals: 
   void install(Package* package);
   void remove(Package* package);

@@ -33,7 +33,6 @@ MainWindow::MainWindow() : QMainWindow(0), packages(),
   setCentralWidget(packageScrollArea);
   
   connect(&packages, SIGNAL(packagesChanged(QList<Package*>)), packageView, SLOT(setPackages(QList<Package*>)));
-  connect(&packages, SIGNAL(installing(Package*,QPndman::Handle*)), packageView, SLOT(showProgressBar(Package*,QPndman::Handle*)));
   
   connect(&packages, SIGNAL(syncing(QPndman::SyncHandle*)), this, SLOT(syncing(QPndman::SyncHandle*)));
   connect(&packages, SIGNAL(syncDone()), this, SLOT(syncDone()));
