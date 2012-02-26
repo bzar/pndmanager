@@ -32,7 +32,6 @@ QList< QPndman::Device* > PackageModel::getDevices()
 void PackageModel::crawl()
 {
   qDebug() << "PackageModel::crawl";
-  localRepository->clear();
   foreach(QPndman::Device* device, devices)
   {
     device->crawl();
