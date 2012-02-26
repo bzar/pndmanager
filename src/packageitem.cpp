@@ -44,11 +44,11 @@ void PackageItem::setPackage(Package* p)
 {
   package = p;
   
-  
   title.setText(package->getTitle());
   if(!package->getInstalled())
   {
     installButton.show();
+    installButton.setEnabled(true);
     removeButton.hide();
     progressBar.setValue(0);
     progressBar.setMaximum(1);
@@ -57,6 +57,7 @@ void PackageItem::setPackage(Package* p)
   {
     installButton.hide();
     removeButton.show();
+    removeButton.setEnabled(true);
     progressBar.setValue(1);
     progressBar.setMaximum(1);
   }  

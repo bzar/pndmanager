@@ -25,6 +25,7 @@ public slots:
 signals:
   void packagesChanged(QList<Package*> const& packages);
   void installing(Package* package, QPndman::Handle* handle);
+  void error(QString);
   
 private slots:
   void updatePackages();

@@ -150,11 +150,15 @@ void PackageModel::remove(Package* package)
     if(device->getDevice() == package->getDevice())
     {
       qDebug() << "PackageModel::remove, removing from" << device->getDevice();
-      QPndman::Handle* handle = device->remove(*package);
-      DownloadWorker* worker = new DownloadWorker(handle);
-      connect(handle, SIGNAL(done()), this, SLOT(crawl()));
-      worker->start();
+      if(device->remove(*package))
+      {
+        crawl();
+      }
+      else
+      {
+        qDebug() << "ERRRRRRRRRORRRRRRRRRRRRRRR";
+        emit error("Error removing pnd");
+      }
     }
   }
-  updatePackages();
 }

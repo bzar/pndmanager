@@ -22,6 +22,7 @@ void Package::setInstalled(bool value)
 
 void Package::updateFrom(QPndman::Package package)
 {
+  setPndmanPackage(package.getPndmanPackage());
   setPath(package.getPath());
   setId(package.getId());
   setIcon(package.getIcon());
