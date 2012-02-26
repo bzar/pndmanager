@@ -19,7 +19,7 @@ void DownloadWorker::process()
   int status = handle->download();
   handle->update();
   
-  if(status == 0 && handle->getDone())
+  if(status == 0 || handle->getDone())
   {
     qDebug() << "DownloadWorker::process -> ready";
     emit ready(handle);

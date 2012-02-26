@@ -32,21 +32,25 @@ QList< QPndman::Device* > PackageModel::getDevices()
 void PackageModel::crawl()
 {
   qDebug() << "PackageModel::crawl";
+  emit crawling();
   foreach(QPndman::Device* device, devices)
   {
     device->crawl();
   }
   localRepository->update();
   updatePackages();
+  emit crawlDone();
 }
 
 void PackageModel::sync()
 {
   qDebug() << "PackageModel::sync";
   QPndman::SyncHandle* handle = repository->sync();
+  emit syncing(handle);
   SyncWorker* worker = new SyncWorker(handle);
   connect(worker, SIGNAL(ready(QPndman::SyncHandle*)), repository, SLOT(update()));
   connect(worker, SIGNAL(ready(QPndman::SyncHandle*)), this, SLOT(updatePackages()));
+  connect(worker, SIGNAL(ready(QPndman::SyncHandle*)), this, SIGNAL(syncDone()));
   worker->start();
 }
 
@@ -144,19 +148,16 @@ void PackageModel::install(Package* package, QPndman::Device* device, QPndman::I
 void PackageModel::remove(Package* package)
 {
   qDebug() << "PackageModel::remove";
-  qDebug() << "PackageModel::remove, looking for" << package->getDevice();
   foreach(QPndman::Device* device, devices)
   {
     if(device->getDevice() == package->getDevice())
     {
-      qDebug() << "PackageModel::remove, removing from" << device->getDevice();
       if(device->remove(*package))
       {
         crawl();
       }
       else
       {
-        qDebug() << "ERRRRRRRRRORRRRRRRRRRRRRRR";
         emit error("Error removing pnd");
       }
     }
