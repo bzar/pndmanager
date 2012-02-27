@@ -1,7 +1,7 @@
 #include "package.h"
 
 Package::Package(QPndman::Package const& p, bool installed, QObject* parent):
-  QPndman::Package(p), installed(installed), bytesDownloaded(installed ? 1 : 0), bytesToDownload(installed ? 1 : 0)
+  QPndman::Package(p), installed(installed), bytesDownloaded(installed ? 1 : 0), bytesToDownload(1)
 {
   setParent(parent);
 }

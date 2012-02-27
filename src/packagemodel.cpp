@@ -48,23 +48,10 @@ void PackageModel::sync()
   QPndman::SyncHandle* handle = repository->sync();
   emit syncing(handle);
   SyncWorker* worker = new SyncWorker(handle);
+  handle->setParent(worker);
   connect(worker, SIGNAL(ready(QPndman::SyncHandle*)), repository, SLOT(update()));
   connect(worker, SIGNAL(ready(QPndman::SyncHandle*)), this, SLOT(updatePackages()));
   connect(worker, SIGNAL(ready(QPndman::SyncHandle*)), this, SIGNAL(syncDone()));
-  worker->start();
-}
-
-void PackageModel::syncAndCrawl()
-{
-  qDebug() << "PackageModel::syncAndCrawl";
-  foreach(QPndman::Device* device, devices)
-  {
-    device->crawl();
-  }
-  QPndman::SyncHandle* handle = repository->sync();
-  SyncWorker* worker = new SyncWorker(handle);
-  connect(worker, SIGNAL(ready(QPndman::SyncHandle*)), repository, SLOT(update()));
-  connect(worker, SIGNAL(ready(QPndman::SyncHandle*)), this, SLOT(updatePackages()));
   worker->start();
 }
 
@@ -140,6 +127,7 @@ void PackageModel::install(Package* package, QPndman::Device* device, QPndman::I
   qDebug() << "PackageModel::install";
   QPndman::InstallHandle* handle = device->install(*package, location);
   DownloadWorker* worker = new DownloadWorker(handle);
+  handle->setParent(worker);
   connect(handle, SIGNAL(bytesDownloadedChanged(qint64)), package, SIGNAL(bytesDownloadedChanged(qint64)));
   connect(handle, SIGNAL(bytesToDownloadChanged(qint64)), package, SIGNAL(bytesToDownloadChanged(qint64)));
   connect(handle, SIGNAL(done()), package, SLOT(setInstalled()));
@@ -157,6 +145,8 @@ void PackageModel::remove(Package* package)
     {
       if(device->remove(*package))
       {
+        package->setBytesDownloaded(0);
+        package->setInstalled(false);
         crawl();
       }
       else

@@ -16,7 +16,6 @@ public:
 
   QList<QPndman::Device*> getDevices();
 public slots:
-  void syncAndCrawl();
   void crawl();
   void sync();
   void install(Package* package, QPndman::Device* device, QPndman::InstallLocation location);

@@ -47,8 +47,7 @@ void PackageItem::setPackage(Package* p)
     package = p;    
     connect(package, SIGNAL(bytesDownloadedChanged(qint64)), this, SLOT(setBytesDownloaded(qint64)));
     connect(package, SIGNAL(bytesToDownloadChanged(qint64)), this, SLOT(bytesToDownloadChanged(qint64)));
-    progressBar.setMaximum(1);
-    progressBar.setValue(0);
+    progressBar.setMaximum(package->getBytesToDownload());
   }
   
   title.setText(package->getTitle());
@@ -57,6 +56,7 @@ void PackageItem::setPackage(Package* p)
     installButton.setEnabled(true);
     installButton.show();
     removeButton.hide();
+    progressBar.setValue(package->getBytesDownloaded());
   }
   else
   {
