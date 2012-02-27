@@ -28,9 +28,9 @@ PackageItem::PackageItem(Package* p, int index, QWidget* parent): QWidget(parent
   title.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
   layout->addWidget(&size);
   layout->addWidget(&installButton);
-  installButton.setStyleSheet("background-color: #69D772;");
+  installButton.setStyleSheet("background-color: #69D772; width: 48px;");
   layout->addWidget(&removeButton);
-  removeButton.setStyleSheet("background-color: #D76D69;");
+  removeButton.setStyleSheet("background-color: #D76D69; width: 48px;");
   layout->addWidget(&detailsButton);
   setPackage(p);
 }
