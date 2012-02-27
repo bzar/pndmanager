@@ -1,10 +1,12 @@
 #include "mainwindow.h"
 #include "installdialog.h"
+#include "packagedetails.h"
+#include "syncworker.h"
+#include "packageview.h"
+
 #include <QListView>
 #include <QToolBar>
 #include <QLabel>
-#include "syncworker.h"
-#include "packageview.h"
 #include <QScrollArea>
 #include <QDebug>
 #include <QStatusBar>
@@ -12,11 +14,15 @@
 
 MainWindow::MainWindow() : QMainWindow(0), packages(), 
   syncAction("Synchronize with server", this),
-  crawlAction("Refresh local PNDs", this)
+  crawlAction("Refresh local PNDs", this),
+  syncProgressBar()
 {
   setWindowTitle("PND Manager");
   resize(700, 400);
-  
+
+  statusBar()->addPermanentWidget(&syncProgressBar);
+  syncProgressBar.hide();
+  syncProgressBar.setMaximumSize(128, 16);
   QToolBar* toolBar = new QToolBar("Toolbar!", this);
   addToolBar(toolBar);
 
@@ -75,18 +81,28 @@ void MainWindow::install(Package* package)
 
 void MainWindow::showDetails(Package* package)
 {
-  qDebug() << "Show details for" << package->getId();
+  PackageDetails* details = new PackageDetails(package);
+  connect(details, SIGNAL(install(Package*)), this, SLOT(install(Package*)));
+  connect(details, SIGNAL(remove(Package*)), &packages, SLOT(remove(Package*)));
+  connect(&packages, SIGNAL(packagesChanged(QList<Package*>)), details, SLOT(update()));
+  details->show();
 }
 
 void MainWindow::syncing(QPndman::SyncHandle* handle)
 {
   syncAction.setDisabled(true);
+  connect(handle, SIGNAL(bytesDownloadedChanged(qint64)), this, SLOT(updateSyncProgressBarValue(qint64)));
+  connect(handle, SIGNAL(bytesToDownloadChanged(qint64)), this, SLOT(updateSyncProgressBarMaximum(qint64)));
+  syncProgressBar.setValue(handle->getBytesDownloaded());
+  syncProgressBar.setMaximum(handle->getBytesToDownload());
+  syncProgressBar.show();
   statusBar()->showMessage("Synchronizing with repository");
 }
 
 void MainWindow::syncDone()
 {
   syncAction.setEnabled(true);
+  syncProgressBar.hide();
   statusBar()->showMessage("Successfully synchronized with repository");
 }
 
@@ -100,4 +116,14 @@ void MainWindow::crawlDone()
 {
   crawlAction.setEnabled(true);
   statusBar()->showMessage("Local PNDs updated");
+}
+
+void MainWindow::updateSyncProgressBarValue(qint64 value)
+{
+  syncProgressBar.setValue(value);
+}
+
+void MainWindow::updateSyncProgressBarMaximum(qint64 maximum)
+{
+  syncProgressBar.setMaximum(maximum);
 }

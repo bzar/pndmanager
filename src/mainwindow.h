@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QAction>
+#include <QProgressBar>
 #include "packagemodel.h"
 
 class MainWindow : public QMainWindow
@@ -19,11 +20,14 @@ private slots:
   void syncDone();
   void crawling();
   void crawlDone();
+  
+  void updateSyncProgressBarValue(qint64);
+  void updateSyncProgressBarMaximum(qint64);
 private:
   PackageModel packages;
 
   QAction syncAction;
   QAction crawlAction;
-  
+  QProgressBar syncProgressBar;
 };
 #endif
