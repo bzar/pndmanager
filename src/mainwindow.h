@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QAction>
 #include <QProgressBar>
+#include <QErrorMessage>
+
 #include "packagemodel.h"
 
 class MainWindow : public QMainWindow
@@ -23,11 +25,13 @@ private slots:
   
   void updateSyncProgressBarValue(qint64);
   void updateSyncProgressBarMaximum(qint64);
+
 private:
   PackageModel packages;
 
   QAction syncAction;
   QAction crawlAction;
   QProgressBar syncProgressBar;
+  QErrorMessage errorDialog;
 };
 #endif

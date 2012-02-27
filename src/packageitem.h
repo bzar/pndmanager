@@ -33,6 +33,7 @@ private:
   Package* package;
   
   QLabel title;
+  QLabel size;
   QPushButton installButton;
   QPushButton removeButton;
   QPushButton detailsButton;

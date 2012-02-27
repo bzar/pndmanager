@@ -37,6 +37,7 @@ void PackageModel::crawl()
   {
     device->crawl();
   }
+  repository->update();
   localRepository->update();
   updatePackages();
   emit crawlDone();
@@ -78,17 +79,11 @@ void PackageModel::updatePackages()
   while(i.hasNext())
   {
     Package* p = i.next();
-    if(installed.contains(p->getId()))
+    bool isInInstalled = installed.contains(p->getId());
+    if(isInInstalled || remote.contains(p->getId()))
     {
-      p->setInstalled(true);
-      QPndman::Package package = installed.value(p->getId());
-      p->updateFrom(package);
-      packagesById.insert(p->getId(), p);
-    }
-    else if(remote.contains(p->getId()))
-    {
-      p->setInstalled(false);
-      QPndman::Package package = remote.value(p->getId());
+      p->setInstalled(isInInstalled);
+      QPndman::Package package = isInInstalled ? installed.value(p->getId()) : remote.value(p->getId());
       p->updateFrom(package);
       packagesById.insert(p->getId(), p);
     }
@@ -126,6 +121,12 @@ void PackageModel::install(Package* package, QPndman::Device* device, QPndman::I
 {
   qDebug() << "PackageModel::install";
   QPndman::InstallHandle* handle = device->install(*package, location);
+  if(!handle)
+  {
+    qDebug() << QString("Error installing %1").arg(package->getTitle());
+    emit(error(QString("Error installing %1").arg(package->getTitle())));
+    return;
+  }
   DownloadWorker* worker = new DownloadWorker(handle);
   handle->setParent(worker);
   connect(handle, SIGNAL(bytesDownloadedChanged(qint64)), package, SIGNAL(bytesDownloadedChanged(qint64)));

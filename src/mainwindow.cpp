@@ -15,7 +15,7 @@
 MainWindow::MainWindow() : QMainWindow(0), packages(), 
   syncAction("Synchronize with server", this),
   crawlAction("Refresh local PNDs", this),
-  syncProgressBar()
+  syncProgressBar(), errorDialog()
 {
   setWindowTitle("PND Manager");
   resize(700, 400);
@@ -44,10 +44,12 @@ MainWindow::MainWindow() : QMainWindow(0), packages(),
   connect(&packages, SIGNAL(syncDone()), this, SLOT(syncDone()));
   connect(&packages, SIGNAL(crawling()), this, SLOT(crawling()));
   connect(&packages, SIGNAL(crawlDone()), this, SLOT(crawlDone()));
+  connect(&packages, SIGNAL(error(QString)), &errorDialog, SLOT(showMessage(QString)));
   
   connect(packageView, SIGNAL(install(Package*)), this, SLOT(install(Package*)));
   connect(packageView, SIGNAL(remove(Package*)), &packages, SLOT(remove(Package*)));
   connect(packageView, SIGNAL(details(Package*)), this, SLOT(showDetails(Package*)));
+  
   
   packages.crawl();
 }

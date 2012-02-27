@@ -3,7 +3,7 @@
 #include <QHBoxLayout>
 
 PackageItem::PackageItem(Package* p, int index, QWidget* parent): QWidget(parent),
-  package(0), title(), 
+  package(0), title(), size(),
   installButton("Install"), removeButton("Remove"), detailsButton("Details"), progressBar()
 {
   connect(&installButton, SIGNAL(clicked(bool)), this, SLOT(handleInstall()));
@@ -26,6 +26,7 @@ PackageItem::PackageItem(Package* p, int index, QWidget* parent): QWidget(parent
   progressBar.setMaximumWidth(64);
   layout->addWidget(&title);
   title.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+  layout->addWidget(&size);
   layout->addWidget(&installButton);
   installButton.setStyleSheet("background-color: #69D772;");
   layout->addWidget(&removeButton);
@@ -51,6 +52,8 @@ void PackageItem::setPackage(Package* p)
   }
   
   title.setText(package->getTitle());
+  size.setText(QString("%1 KiB").arg(package->getSize()/1024));
+  
   if(!package->getInstalled())
   {
     installButton.setEnabled(true);
