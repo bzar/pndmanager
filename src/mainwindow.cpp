@@ -48,6 +48,7 @@ MainWindow::MainWindow() : QMainWindow(0), packages(),
   
   connect(packageView, SIGNAL(install(Package*)), this, SLOT(install(Package*)));
   connect(packageView, SIGNAL(remove(Package*)), &packages, SLOT(remove(Package*)));
+  connect(packageView, SIGNAL(upgrade(Package*)), &packages, SLOT(upgrade(Package*)));
   connect(packageView, SIGNAL(details(Package*)), this, SLOT(showDetails(Package*)));
   
   

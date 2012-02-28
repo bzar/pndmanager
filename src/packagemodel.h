@@ -20,10 +20,12 @@ public slots:
   void sync();
   void install(Package* package, QPndman::Device* device, QPndman::InstallLocation location);
   void remove(Package* package);
+  void upgrade(Package* package);
   
 signals:
   void packagesChanged(QList<Package*> const& packages);
   void installing(Package* package, QPndman::Handle* handle);
+  void upgrading(Package* package, QPndman::Handle* handle);
   void error(QString);
   void syncing(QPndman::SyncHandle* handle);
   void syncDone();

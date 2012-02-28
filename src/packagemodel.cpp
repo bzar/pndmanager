@@ -123,7 +123,6 @@ void PackageModel::install(Package* package, QPndman::Device* device, QPndman::I
   QPndman::InstallHandle* handle = device->install(*package, location);
   if(!handle)
   {
-    qDebug() << QString("Error installing %1").arg(package->getTitle());
     emit(error(QString("Error installing %1").arg(package->getTitle())));
     return;
   }
@@ -156,4 +155,22 @@ void PackageModel::remove(Package* package)
       }
     }
   }
+}
+
+void PackageModel::upgrade(Package* package)
+{
+  qDebug() << "PackageModel::upgrade";
+  QPndman::UpgradeHandle* handle = package->upgrade();
+  if(!handle)
+  {
+    emit(error(QString("Error upgrading %1").arg(package->getTitle())));
+    return;
+  }
+  DownloadWorker* worker = new DownloadWorker(handle);
+  handle->setParent(worker);
+  connect(handle, SIGNAL(bytesDownloadedChanged(qint64)), package, SIGNAL(bytesDownloadedChanged(qint64)));
+  connect(handle, SIGNAL(bytesToDownloadChanged(qint64)), package, SIGNAL(bytesToDownloadChanged(qint64)));
+  connect(handle, SIGNAL(done()), this, SLOT(crawl()));
+  worker->start();
+  emit upgrading(package, handle);
 }

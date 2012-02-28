@@ -18,6 +18,7 @@ public slots:
 signals: 
   void install(Package* package);
   void remove(Package* package);
+  void upgrade(Package* package);
   void details(Package* package);
   
 private:

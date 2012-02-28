@@ -37,6 +37,7 @@ void PackageView::setPackages(QList<Package*> packages)
       item = new PackageItem(p, i, this);
       connect(item, SIGNAL(install(Package*)), this, SIGNAL(install(Package*)));
       connect(item, SIGNAL(remove(Package*)), this, SIGNAL(remove(Package*)));
+      connect(item, SIGNAL(upgrade(Package*)), this, SIGNAL(upgrade(Package*)));
       connect(item, SIGNAL(details(Package*)), this, SIGNAL(details(Package*)));
       
       packageItems << item;

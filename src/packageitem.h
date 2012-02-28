@@ -22,11 +22,13 @@ public slots:
 private slots:
   void handleInstall();
   void handleRemove();
+  void handleUpgrade();
   void handleDetails();
   
 signals:
   void install(Package* package);
   void remove(Package* package);
+  void upgrade(Package* package);
   void details(Package* package);
   
 private:
@@ -36,6 +38,7 @@ private:
   QLabel size;
   QPushButton installButton;
   QPushButton removeButton;
+  QPushButton upgradeButton;
   QPushButton detailsButton;
   QProgressBar progressBar;
 };
